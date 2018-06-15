@@ -1,12 +1,15 @@
 /**
  * Utility for generating row / column headers
  */
+import {Config} from '../../config';
 import {FacetFieldDef} from '../../facet';
 import {vgField} from '../../fielddef';
+import {HEADER_PROPERTIES} from '../../header';
 import {keys} from '../../util';
 import {AxisOrient, VgAxis, VgMarkGroup} from '../../vega.schema';
 import {formatSignalRef} from '../common';
 import {Model} from '../model';
+
 
 export type HeaderChannel = 'row' | 'column';
 export const HEADER_CHANNELS: HeaderChannel[] = ['row', 'column'];
@@ -62,6 +65,7 @@ export function getHeaderType(orient: AxisOrient) {
 export function getTitleGroup(model: Model, channel: HeaderChannel) {
   const title = model.component.layoutHeaders[channel].title;
   const textOrient = channel === 'row' ? 'vertical' : undefined;
+  const config = model.config? model.config : undefined;
 
   const update = {
     align: {value: 'center'},
@@ -71,6 +75,7 @@ export function getTitleGroup(model: Model, channel: HeaderChannel) {
     // also make sure that guide-title config override these Vega-lite default
   };
 
+  getHeaderTitleProperties(config, update);
   return {
     name:  model.getName(`${channel}_title`),
     role: `${channel}-title`,
@@ -120,6 +125,20 @@ export function labelBaseline(angle: number) {
   }
   return {};
 }
+
+const VG_HEADER_PROP_NAMES = ['align', 'angle', 'baseline', 'fill', 'font', 'fontSize', 'fontWeight', 'limit', 'x', 'y'];
+
+function getHeaderTitleProperties(config: Config, update: Object) {
+  if (config.header) {
+    for (let i = 0; i < VG_HEADER_PROP_NAMES.length; i++) {
+      if (config.header[HEADER_PROPERTIES[i]]) {
+        update[VG_HEADER_PROP_NAMES[i]] = {value: config.header[HEADER_PROPERTIES[i]]};
+      }
+    }
+  }
+  return update;
+}
+
 
 function getHeaderGroup(model: Model, channel: HeaderChannel, headerType: HeaderType, layoutHeader: LayoutHeaderComponent, headerCmpt: HeaderComponent) {
   if (headerCmpt) {
