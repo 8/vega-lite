@@ -67,7 +67,7 @@ export function getTitleGroup(model: Model, channel: HeaderChannel) {
   const textOrient = channel === 'row' ? 'vertical' : undefined;
   const config = model.config? model.config : undefined;
 
-  const update = {
+  const defaults = {
     align: {value: 'center'},
     text: {value: title},
     ...(textOrient === 'vertical' ? {angle: {value: 270}}: {}),
@@ -75,7 +75,7 @@ export function getTitleGroup(model: Model, channel: HeaderChannel) {
     // also make sure that guide-title config override these Vega-lite default
   };
 
-  getHeaderConfigProperties(config, update);
+  const update = {...defaults, ...getHeaderConfigProperties(config)};
   return {
     name:  model.getName(`${channel}_title`),
     role: `${channel}-title`,
@@ -126,15 +126,16 @@ export function labelBaseline(angle: number) {
   return {};
 }
 
-function getHeaderConfigProperties(config: Config, update: Object) {
+function getHeaderConfigProperties(config: Config) {
+  const props = {};
   if (config.header) {
     for (const prop of HEADER_PROPERTIES) {
       if (config.header[prop]) {
-        update[HEADER_PROPERTIES_MAP[prop]] = {value: config.header[prop]};
+        props[HEADER_PROPERTIES_MAP[prop]] = {value: config.header[prop]};
       }
     }
   }
-  return update;
+  return props;
 }
 
 
