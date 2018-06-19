@@ -4,7 +4,7 @@
 import {Config} from '../../config';
 import {FacetFieldDef} from '../../facet';
 import {vgField} from '../../fielddef';
-import {HEADER_PROPERTIES} from '../../header';
+import {HEADER_PROPERTIES, HEADER_PROPERTIES_MAP} from '../../header';
 import {keys} from '../../util';
 import {AxisOrient, VgAxis, VgMarkGroup} from '../../vega.schema';
 import {formatSignalRef} from '../common';
@@ -75,7 +75,7 @@ export function getTitleGroup(model: Model, channel: HeaderChannel) {
     // also make sure that guide-title config override these Vega-lite default
   };
 
-  getHeaderTitleProperties(config, update);
+  getHeaderConfigProperties(config, update);
   return {
     name:  model.getName(`${channel}_title`),
     role: `${channel}-title`,
@@ -126,13 +126,11 @@ export function labelBaseline(angle: number) {
   return {};
 }
 
-const VG_HEADER_PROP_NAMES = ['align', 'angle', 'baseline', 'fill', 'font', 'fontSize', 'fontWeight', 'limit', 'x', 'y'];
-
-function getHeaderTitleProperties(config: Config, update: Object) {
+function getHeaderConfigProperties(config: Config, update: Object) {
   if (config.header) {
-    for (let i = 0; i < VG_HEADER_PROP_NAMES.length; i++) {
-      if (config.header[HEADER_PROPERTIES[i]]) {
-        update[VG_HEADER_PROP_NAMES[i]] = {value: config.header[HEADER_PROPERTIES[i]]};
+    for (const prop of HEADER_PROPERTIES) {
+      if (config.header[prop]) {
+        update[HEADER_PROPERTIES_MAP[prop]] = {value: config.header[prop]};
       }
     }
   }
